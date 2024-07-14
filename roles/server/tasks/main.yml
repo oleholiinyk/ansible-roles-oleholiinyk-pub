@@ -68,7 +68,7 @@
       </VirtualHost>
     dest: /etc/apache2/sites-available/000-default.conf
   notify:
-    - restart Restart Apache2
+    - Restart Apache2
 
 - name: Download Composer installer
   get_url:
