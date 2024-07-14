@@ -24,17 +24,13 @@
     dest: "{{ app_dir }}"
     update: yes
 
-#- name: Set permissions
-#  ansible.builtin.file:
-#    path: "{{ app_dir }}"
-#    owner: "{{ apache_user }}"
-#    group: "{{ apache_user }}"
-#    mode: 0755
-#    recurse: yes
-
 - name: Set permissions
-  command: chown -R www-data:www-data "{{ app_dir }}"
-
+  ansible.builtin.file:
+    path: "{{ app_dir }}"
+    owner: "{{ apache_user }}"
+    group: "{{ apache_user }}"
+    mode: 0755
+    recurse: yes
 
 - name: Enable the Apache2 module mod_rewrite
   community.general.apache2_module:
@@ -43,15 +39,36 @@
   notify:
     - Restart Apache2
 
-- name: Set Apache virtual host
-  ansible.builtin.template:
-    src: apache.conf.j2
-    dest: /etc/apache2/sites-available/app.conf
+#- name: Set Apache virtual host
+#  ansible.builtin.template:
+#    src: "apache.conf.j2"
+#    dest: /etc/apache2/sites-available/app.conf
+#
+#- name: Enable application site
+#  ansible.builtin.command:
+#    cmd: a2ensite app
+#  notify: Restart Apache2
 
-- name: Enable application site ansible.builtin.
-  ansible.builtin.command:
-    cmd: a2ensite app
-  notify: Restart Apache2
+- name: Set Apache virtual host
+  copy:
+    content: |
+      <VirtualHost *:80>
+          DocumentRoot {{ app_dir }}/public
+
+          <Directory {{ app_dir }}>
+              Options Indexes FollowSymLinks MultiViews
+              AllowOverride All
+              Order allow,deny
+              allow from all
+              Require all granted
+          </Directory>
+
+          ErrorLog ${APACHE_LOG_DIR}/error.log
+          CustomLog ${APACHE_LOG_DIR}/access.log combined
+      </VirtualHost>
+    dest: /etc/apache2/sites-available/000-default.conf
+  notify:
+    - restart Restart Apache2
 
 - name: Download Composer installer
   get_url:
