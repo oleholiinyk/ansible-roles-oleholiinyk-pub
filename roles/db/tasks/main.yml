@@ -28,7 +28,6 @@
 
 - name: Create database user
   community.postgresql.postgresql_user:
-
     db: "{{ db_name }}"
     name: "{{ db_user }}"
     password: "{{ db_pass }}"
@@ -36,9 +35,14 @@
   become: true
   become_user: postgres
 
-- name: Configure PostgreSQL to listen on the specified host
+- name: Allow connections from the application
   ansible.builtin.lineinfile:
-    path: /etc/postgresql/14/main/postgresql.conf
-    regexp: '^#?listen_addresses ='
-    line: "listen_addresses = '{{ db_host }}'"
+    path: /etc/postgresql/14/main/pg_hba.conf
+    line: "host    all             all             {{ db_host }}/32            md5"
+    state: present
   notify: Restart PostgreSQL
+
+- name: Allow PostgreSQL through the firewall
+  ansible.builtin.ufw:
+    rule: allow
+    name: "PostgreSQL"
