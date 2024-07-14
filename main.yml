@@ -5,6 +5,11 @@
   become: yes
   roles:
     - db
+  handlers:
+    - name: Restart PostgreSQL
+      ansible.builtin.systemd:
+        name: postgresql
+        state: restarted
 
 - name: Setup app-for-devops
   hosts: server
