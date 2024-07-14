@@ -21,7 +21,6 @@
 
 - name: Create database user
   community.postgresql.postgresql_user:
-    db: "{{ db_name }}"
     name: "{{ db_user }}"
     password: "{{ db_pass }}"
     state: present
