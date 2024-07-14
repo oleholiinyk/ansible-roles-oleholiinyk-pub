@@ -32,10 +32,10 @@
     mode: 0755
     recurse: yes
 
-- name: Enable mod_rewrite
-  community general.apache2_module:
-    name: rewrite
-    state: present
+- name: enabled mod_rewrite
+  apache2_module: name=rewrite state=present
+  notify:
+    - restart apache2
 
 - name: Set Apache virtual host
   template:
