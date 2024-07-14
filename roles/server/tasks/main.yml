@@ -39,36 +39,20 @@
   notify:
     - Restart Apache2
 
-#- name: Set Apache virtual host
-#  ansible.builtin.template:
-#    src: "apache.conf.j2"
-#    dest: /etc/apache2/sites-available/app.conf
-#
-#- name: Enable application site
-#  ansible.builtin.command:
-#    cmd: a2ensite app
-#  notify: Restart Apache2
+- name: Set Apache virtual host from template
+  ansible.builtin.template:
+    src: "apache.conf.j2"
+    dest: /etc/apache2/sites-available/app.conf
 
-- name: Set Apache virtual host
-  copy:
-    content: |
-      <VirtualHost *:80>
-          DocumentRoot {{ app_dir }}/public
+- name: Enable application site
+  ansible.builtin.command:
+    cmd: a2ensite app.conf
+  notify: Restart Apache2
 
-          <Directory {{ app_dir }}>
-              Options Indexes FollowSymLinks MultiViews
-              AllowOverride All
-              Order allow,deny
-              allow from all
-              Require all granted
-          </Directory>
-
-          ErrorLog ${APACHE_LOG_DIR}/error.log
-          CustomLog ${APACHE_LOG_DIR}/access.log combined
-      </VirtualHost>
-    dest: /etc/apache2/sites-available/000-default.conf
-  notify:
-    - Restart Apache2
+- name: Disable default site
+  ansible.builtin.command:
+    cmd: a2dissite 000-default.conf
+  notify: Restart Apache2
 
 - name: Download Composer installer
   get_url:
