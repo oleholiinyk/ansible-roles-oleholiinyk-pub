@@ -49,11 +49,6 @@
     cmd: a2ensite app.conf
   notify: Restart Apache2
 
-- name: Disable default site
-  ansible.builtin.command:
-    cmd: a2dissite 000-default.conf
-  notify: Restart Apache2
-
 - name: Download Composer installer
   get_url:
     url: https://getcomposer.org/installer
