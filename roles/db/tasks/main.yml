@@ -41,8 +41,3 @@
     line: "host    all             all             {{ db_host }}/32            md5"
     state: present
   notify: Restart PostgreSQL
-
-- name: Allow PostgreSQL through the firewall
-  ansible.builtin.ufw:
-    rule: allow
-    name: "PostgreSQL"
