@@ -53,10 +53,10 @@
     path: /etc/postgresql/14/main/pg_hba.conf
     line: "host    all             all             {{ db_host }}/32            md5"
     state: present
-  notify: Restart PostgreSQL
+  register: pg_hba_result  # Register the result of the task
 
 - name: Restart PostgreSQL
   ansible.builtin.systemd:
     name: postgresql
     state: restarted
-  when: ansible.builtin.changed
+  when: pg_hba_result.changed
