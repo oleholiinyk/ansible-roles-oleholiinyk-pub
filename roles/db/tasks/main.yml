@@ -31,7 +31,6 @@
     db: "{{ db_name }}"
     name: "{{ db_user }}"
     password: "{{ db_pass }}"
-    priv: ALL
     state: present
   become: yes
   become_user: postgres
@@ -39,7 +38,7 @@
 
 - name: Configure PostgreSQL to listen on the specified host
   ansible.builtin.lineinfile:
-    path: /etc/postgresql/12/main/postgresql.conf
+    path: /etc/postgresql/14/main/postgresql.conf
     regexp: '^#?listen_addresses ='
     line: "listen_addresses = '{{ db_host }}'"
   notify: Restart PostgreSQL
