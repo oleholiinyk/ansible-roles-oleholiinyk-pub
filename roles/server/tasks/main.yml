@@ -26,9 +26,9 @@
 
 - name: Set permissions
   ansible.builtin.file:
-    path: {{ app_dir }}
-    owner: {{ apache_user }}
-    group: {{ apache_user }}
+    path: "{{ app_dir }}"
+    owner: "{{ apache_user }}"
+    group: "{{ apache_user }}"
     mode: 0755
     recurse: yes
 
