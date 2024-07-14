@@ -9,7 +9,7 @@
   ansible.builtin.apt:
     name:
       - postgresql
-      - python3-pymysql
+      - python3-psycopg2
 
 - name: Start and enable PostgreSQL service
   ansible.builtin.service:
