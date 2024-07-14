@@ -131,9 +131,3 @@
     chdir: "{{ app_dir }}"
   async: 1
   poll: 0
-
-handlers:
-  - name: restart apache2
-    ansible.builtin.service:
-      name: apache2
-      state: restarted
