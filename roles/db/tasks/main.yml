@@ -8,7 +8,7 @@
 - name: Install PostgreSQL server
   ansible.builtin.apt:
     name:
-      - postgresql-12
+      - postgresql
       - python3-psycopg2
     state: present
     update_cache: true
