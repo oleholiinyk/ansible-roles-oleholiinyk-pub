@@ -1,3 +1,4 @@
 app_repo: https://github.com/Practical-DevOps/app-for-devops.git
 app_dir: /var/www/app-for-devops
 apache_user: www-data
+db_port: 5432
