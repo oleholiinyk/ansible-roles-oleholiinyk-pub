@@ -20,19 +20,30 @@
     enabled: true
 
 - name: Create database
-  postgresql_db:
+  community.postgresql.postgresql_db:
     name: "{{ db_name }}"
     state: present
-  become: yes
+  become: true
   become_user: postgres
 
 - name: Create database user
-  postgresql_user:
+  community.postgresql.postgresql_user:
+
     db: "{{ db_name }}"
     name: "{{ db_user }}"
     password: "{{ db_pass }}"
     state: present
-  become: yes
+  become: true
+  become_user: postgres
+  environment:
+    PGOPTIONS: "-c password_encryption=scram-sha-256"
+
+- name: Create the schemas
+  community.postgresql.postgresql_schema:
+    db: "{{ db_name }}"
+    name: "{{ db_user }}"
+    owner: "{{ db_user }}"
+  become: true
   become_user: postgres
 
 
