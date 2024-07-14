@@ -10,6 +10,8 @@
     name:
       - postgresql
       - python3-psycopg2
+    state: present
+    update_cache: true
 
 - name: Create the cluster
   ansible.builtin.command:
