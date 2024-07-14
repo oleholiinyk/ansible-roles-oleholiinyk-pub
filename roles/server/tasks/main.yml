@@ -73,6 +73,7 @@
   loop:
     - { regexp: '^DB_CONNECTION=', line: "DB_HOST=pgsql" }
     - { regexp: '^DB_HOST=', line: "DB_HOST={{ db_host }}" }
+    - { regexp: '^DB_PORT=', line: "DB_HOST={{ db_port }}" }
     - { regexp: '^DB_DATABASE=', line: "DB_DATABASE={{ db_name }}" }
     - { regexp: '^DB_USERNAME=', line: "DB_USERNAME={{ db_user }}" }
     - { regexp: '^DB_PASSWORD=', line: "DB_PASSWORD={{ db_pass }}" }
