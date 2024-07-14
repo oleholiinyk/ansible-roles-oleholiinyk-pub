@@ -13,6 +13,12 @@
     state: present
     update_cache: true
 
+- name: Start and enable the service
+  ansible.builtin.systemd:
+    name: postgresql
+    state: started
+    enabled: true
+
 - name: Create database
   postgresql_db:
     name: "{{ db_name }}"
