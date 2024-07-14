@@ -35,9 +35,21 @@
   become: true
   become_user: postgres
 
+#- name: Configure PostgreSQL to listen on the specified host
+#  ansible.builtin.lineinfile:
+#    path: /etc/postgresql/14/main/postgresql.conf
+#    regexp: '^#?listen_addresses ='
+#    line: "listen_addresses = '{{ db_host }}'"
+#  notify: Restart PostgreSQL
+
 - name: Allow connections from the application
   ansible.builtin.lineinfile:
     path: /etc/postgresql/14/main/pg_hba.conf
     line: "host    all             all             {{ db_host }}/32            md5"
     state: present
   notify: Restart PostgreSQL
+
+- name: Restart PostgreSQL
+  ansible.builtin.systemd:
+    name: postgresql
+    state: restarted
