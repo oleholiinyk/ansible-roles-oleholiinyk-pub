@@ -22,9 +22,8 @@
 - name: Allow PostgreSQL port in UFW
   ansible.builtin.ufw:
     rule: allow
-    name: 'PostgreSQL'
     port: '5432'
-    proto: 'tcp'
+    proto: tcp
 
 - name: Create database
   community.postgresql.postgresql_db:
