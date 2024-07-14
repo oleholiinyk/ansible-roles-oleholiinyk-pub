@@ -22,7 +22,7 @@
 - name: Create database
   community.postgresql.postgresql_db:
     name: "{{ db_name }}"
-    encoding: "UTF-8"
+    encoding: "utf8"
     state: present
   become: true
   become_user: postgres
