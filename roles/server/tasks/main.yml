@@ -35,6 +35,7 @@
 - name: Set permissions
   command: chown -R www-data:www-data "{{ app_dir }}"
 
+
 - name: Enable the Apache2 module mod_rewrite
   community.general.apache2_module:
     state: present
