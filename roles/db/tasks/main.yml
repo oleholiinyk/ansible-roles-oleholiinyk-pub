@@ -9,20 +9,22 @@
   ansible.builtin.apt:
     name:
       - postgresql
+      - postgresql-server
       - python3-psycopg2
 
-- name: Start and enable PostgreSQL service
-  ansible.builtin.service:
-    name: postgresql
-    state: started
-    enabled: yes
+- name: "Find out if PostgreSQL is initialized"
+  ansible.builtin.stat:
+    path: "/var/lib/pgsql/data/pg_hba.conf"
+  register: postgres_data
 
-- name: Create PostgreSQL root user and password
-  postgresql_user:
-    name: "{{ login_user }}"
-    password: "{{ login_pass }}"
-    role_attr_flags: SUPERUSER,CREATEDB,CREATEROLE
-    state: present
+- name: "Initialize PostgreSQL"
+  shell: "postgresql-setup initdb"
+  when: not postgres_data.stat.exists
+
+- name: "Start and enable services"
+  service: "name={{ item }} state=started enabled=yes"
+  with_items:
+    - postgresql
 
 - name: Create database user
   postgresql_user:
@@ -30,9 +32,13 @@
     password: "{{ db_pass }}"
     role_attr_flags: LOGIN
     state: present
+  become: yes
+  become_user: postgres
 
 - name: Create database
   postgresql_db:
     name: "{{ db_name }}"
     owner: "{{ db_user }}"
     state: present
+  become: yes
+  become_user: postgres
