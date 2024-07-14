@@ -9,7 +9,6 @@
   ansible.builtin.apt:
     name:
       - postgresql
-      - postgresql-server
       - python3-psycopg2
 
 - name: "Find out if PostgreSQL is initialized"
