@@ -49,10 +49,10 @@
     cmd: a2ensite app.conf
   notify: Restart Apache2
 
-#- name: Disable default site
-#  ansible.builtin.command:
-#    cmd: a2dissite 000-default.conf
-#  notify: Restart Apache2
+- name: Disable default site
+  ansible.builtin.command:
+    cmd: a2dissite 000-default.conf
+  notify: Restart Apache2
 
 - name: Download Composer installer
   get_url:
@@ -82,9 +82,9 @@
     - { regexp: '^DATABASE_URL=', line: "DATABASE_URL=pgsql://{{ db_user }}:{{ db_pass }}@{{ db_host }}:5432/{{ db_name }}" }
     - { regexp: '^DB_HOST=', line: "DB_HOST={{ db_host }}" }
     - { regexp: '^DB_PORT=', line: "DB_HOST={{ db_port }}" }
-    - { regexp: '^DB_DATABASE=', line: "DB_DATABASE={{ db_name }}" }
-    - { regexp: '^DB_USERNAME=', line: "DB_USERNAME={{ db_user }}" }
-    - { regexp: '^DB_PASSWORD=', line: "DB_PASSWORD={{ db_pass }}" }
+#    - { regexp: '^DB_DATABASE=', line: "DB_DATABASE={{ db_name }}" }
+#    - { regexp: '^DB_USERNAME=', line: "DB_USERNAME={{ db_user }}" }
+#    - { regexp: '^DB_PASSWORD=', line: "DB_PASSWORD={{ db_pass }}" }
 
 - name: Install Node.js and npm
   apt:
