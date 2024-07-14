@@ -5,11 +5,6 @@
     root_pass: lookup('community general.random_string')
   when: lookup('ansible.builtin.env', 'CI') == 'true'
 
-- name: Add PostgreSQL repository
-  ansible.builtin.apt_repository:
-    repo: 'deb http://apt.postgresql.org/pub/repos/apt/ {{ ansible_lsb.codename }}-pgdg main'
-    state: present
-
 - name: Install PostgreSQL server
   ansible.builtin.apt:
     name:
