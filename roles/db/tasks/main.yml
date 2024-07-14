@@ -5,41 +5,34 @@
     root_pass: lookup('community general.random_string')
   when: lookup('ansible.builtin.env', 'CI') == 'true'
 
-- name: Install MariaDB server
+- name: Install PostgreSQL server
   ansible.builtin.apt:
     name:
-      - mariadb-server
+      - postgresql
       - python3-pymysql
 
-- name: Start and enable MariaDB service
+- name: Start and enable PostgreSQL service
   ansible.builtin.service:
-    name: mysql
+    name: postgresql
     state: started
     enabled: yes
 
-- name: Create root user and password
-  mysql_user:
+- name: Create PostgreSQL root user and password
+  postgresql_user:
     name: "{{ login_user }}"
     password: "{{ login_pass }}"
-    login_user: "{{ login_user }}"
-    login_password: "{{ root_pass }}"
-    host: "{{ db_host }}"
-    login_unix_socket: /var/run/mysqld/mysqld.sock
-    check_implicit_admin: yes
+    role_attr_flags: SUPERUSER,CREATEDB,CREATEROLE
+    state: present
 
 - name: Create database user
-  mysql_user:
+  postgresql_user:
     name: "{{ db_user }}"
     password: "{{ db_pass }}"
-    login_user: "{{ login_user }}"
-    login_password: "{{ login_pass }}"
-    host: "{{ db_host }}"
-    login_unix_socket: /var/run/mysqld/mysqld.sock
-    priv: "{{ db_name }}.*:ALL"
+    role_attr_flags: LOGIN
+    state: present
 
 - name: Create database
-  mysql_db:
+  postgresql_db:
     name: "{{ db_name }}"
-    login_user: "{{ db_user }}"
-    login_password: "{{ db_pass }}"
+    owner: "{{ db_user }}"
     state: present
