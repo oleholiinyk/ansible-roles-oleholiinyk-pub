@@ -19,12 +19,6 @@
     state: started
     enabled: true
 
-- name: Allow PostgreSQL port in UFW
-  ansible.builtin.ufw:
-    rule: allow
-    port: 5432
-    proto: tcp
-
 - name: Create database
   community.postgresql.postgresql_db:
     name: "{{ db_name }}"
@@ -40,3 +34,10 @@
     state: present
   become: true
   become_user: postgres
+
+- name: Configure PostgreSQL to listen on the specified host
+  ansible.builtin.lineinfile:
+    path: /etc/postgresql/14/main/postgresql.conf
+    regexp: '^#?listen_addresses ='
+    line: "listen_addresses = '{{ db_host }}'"
+  notify: Restart PostgreSQL
