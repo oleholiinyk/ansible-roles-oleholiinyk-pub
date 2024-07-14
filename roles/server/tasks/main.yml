@@ -1,0 +1,139 @@
+- name: Install necessary packages
+  apt:
+    name:
+      - php
+      - php-cli
+      - libapache2-mod-php
+      - php-mysql
+      - php-xml
+      - php-mbstring
+      - git
+      - unzip
+      - curl
+    state: present
+
+- name: Install and Configure Apache2
+  apt:
+    name: apache2
+    update_cache: yes
+    state: latest
+
+- name: Clone repository app-for-devops
+  git:
+    repo: "{{ app_repo }}"
+    dest: "{{ app_dir }}"
+    update: yes
+
+- name: Set permissions
+  ansible.builtin.file:
+    path: {{ app_dir }}
+    owner: {{ apache_user }}
+    group: {{ apache_user }}
+    mode: 0755
+    recurse: yes
+
+- name: Enable mod_rewrite
+  community general.apache2_module:
+    name: rewrite
+    state: present
+
+- name: Set Apache virtual host
+  template:
+    src: apache_vhost.conf.j2
+    dest: /etc/apache2/sites-available/app.conf
+
+- name: Enable application site ansible.builtin.
+  command:
+    cmd: a2ensite app
+    notify: restart apache2
+
+- name: Download Composer installer
+  get_url:
+    url: https://getcomposer.org/installer
+    dest: /tmp/composer-setup.php
+    mode: '0755'
+
+- name: Install Composer
+  command: php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer
+
+- name: Verify Composer installation
+  command: composer --version
+  register: composer_version
+
+- name: Copy environment file
+  command: cp .env.example .env
+  args:
+    chdir: "{{ app_dir }}"
+
+- name: Update environment file
+  lineinfile:
+    path: "{{ app_dir }}/.env"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  loop:
+    - { regexp: '^DB_HOST=', line: "DB_HOST={{ db.db_host }}" }
+    - { regexp: '^DB_DATABASE=', line: "DB_DATABASE={{ db.db_name }}" }
+    - { regexp: '^DB_USERNAME=', line: "DB_USERNAME={{ db.db_user }}" }
+    - { regexp: '^DB_PASSWORD=', line: "DB_PASSWORD={{ db.db_pass }}" }
+
+- name: Install Node.js and npm
+  apt:
+    name:
+      - nodejs
+      - npm
+    state: present
+
+- name: Run Composer install
+  command: composer install
+  args:
+    chdir: "{{ app_dir }}"
+
+- name: Set the application key
+  command: php artisan key:generate
+  args:
+    chdir: "{{ app_dir }}"
+
+- name: Make database migrations
+  command: php artisan migrate --force
+  args:
+    chdir: "{{ app_dir }}"
+
+- name: Run database seeds
+  command: php artisan db:seed
+  args:
+    chdir: "{{ app_dir }}"
+
+- name: Resolve and install the application's frontend dependencies via NPM
+  command: npm install
+  args:
+    chdir: "{{ app_dir }}"
+
+- name: Bundle the application's assets
+  command: npm run build
+  args:
+    chdir: "{{ app_dir }}"
+
+- name: Clean caches and configs
+  command: php artisan optimize
+  args:
+    chdir: "{{ app_dir }}"
+
+- name: Run app
+  command: php artisan serve
+  args:
+    chdir: "{{ app_dir }}"
+  async: 1
+  poll: 0
+
+- name: Run frontend app
+  command: npm run dev
+  args:
+    chdir: "{{ app_dir }}"
+  async: 1
+  poll: 0
+
+handlers:
+  - name: restart apache2
+    ansible.builtin.service:
+      name: apache2
+      state: restarted

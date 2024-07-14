@@ -1,1 +1,13 @@
 ---
+
+- name: Setup database server
+  hosts: db
+  become: yes
+  roles:
+    - db
+
+- name: Setup app-for-devops
+  hosts: server
+  become: yes
+  roles:
+    - server

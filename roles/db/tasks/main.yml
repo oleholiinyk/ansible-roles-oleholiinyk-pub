@@ -1,0 +1,45 @@
+- name: Generate for database
+  ansible.builtin.set_fact:
+    login_user: root
+    login_pass: lookup('community general.random_string')
+    root_pass: lookup('community general.random_string')
+  when: lookup('ansible.builtin.env', 'CI') == 'true'
+
+- name: Install MariaDB server
+  ansible.builtin.apt:
+    name:
+      - mariadb-server
+      - python3-pymysql
+
+- name: Start and enable MariaDB service
+  ansible.builtin.service:
+    name: mysql
+    state: started
+    enabled: yes
+
+- name: Create root user and password
+  mysql_user:
+    name: "{{ login_user }}"
+    password: "{{ login_pass }}"
+    login_user: "{{ login_user }}"
+    login_password: "{{ root_pass }}"
+    host: "{{ db_host }}"
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    check_implicit_admin: yes
+
+- name: Create database user
+  mysql_user:
+    name: "{{ db_user }}"
+    password: "{{ db_pass }}"
+    login_user: "{{ login_user }}"
+    login_password: "{{ login_pass }}"
+    host: "{{ db_host }}"
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    priv: "{{ db_name }}.*:ALL"
+
+- name: Create database
+  mysql_db:
+    name: "{{ db_name }}"
+    login_user: "{{ db_user }}"
+    login_password: "{{ db_pass }}"
+    state: present
