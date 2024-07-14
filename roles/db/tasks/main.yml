@@ -42,3 +42,10 @@
     regexp: '^#?listen_addresses ='
     line: "listen_addresses = '{{ db_host }}'"
   notify: Restart PostgreSQL
+
+- name: Ensure UTF8 encoding for PostgreSQL
+  ansible.builtin.lineinfile:
+    path: /etc/postgresql/14/main/postgresql.conf
+    regexp: '^#?client_encoding ='
+    line: "client_encoding = 'UTF8'"
+  notify: Restart PostgreSQL
