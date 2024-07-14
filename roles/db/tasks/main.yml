@@ -9,7 +9,7 @@
   ansible.builtin.apt:
     name:
       - postgresql
-      - psycopg2-binary
+      - python3-psycopg2
 
 - name: "Find out if PostgreSQL is initialized"
   ansible.builtin.stat:
@@ -26,7 +26,7 @@
     - postgresql
 
 - name: Create database user
-  postgresql_user:
+  ansible.builtin.postgresql_user:
     name: "{{ db_user }}"
     password: "{{ db_pass }}"
     role_attr_flags: LOGIN
@@ -35,7 +35,7 @@
   become_user: postgres
 
 - name: Create database
-  postgresql_db:
+  ansible.builtin.postgresql_db:
     name: "{{ db_name }}"
     owner: "{{ db_user }}"
     state: present
