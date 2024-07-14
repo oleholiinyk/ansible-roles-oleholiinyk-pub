@@ -32,20 +32,20 @@
     mode: 0755
     recurse: yes
 
-- name: enabled mod_rewrite
-  apache2_module: name=rewrite state=present
-  notify:
-    - restart apache2
+- name: Enable the Apache2 module mod_rewrite
+  community-general.apache2_module:
+    state: present
+    name: rewrite
 
 - name: Set Apache virtual host
-  template:
-    src: apache_vhost.conf.j2
+  ansible.builtin.template:
+    src: apache.conf.j2
     dest: /etc/apache2/sites-available/app.conf
 
 - name: Enable application site ansible.builtin.
   ansible.builtin.command:
     cmd: a2ensite app
-  notify: restart apache2
+  notify: Restart Apache2
 
 - name: Download Composer installer
   get_url:

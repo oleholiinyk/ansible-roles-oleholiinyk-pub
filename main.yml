@@ -17,7 +17,7 @@
   roles:
     - server
   handlers:
-    - name: restart apache2
+    - name: Restart Apache2
       ansible.builtin.service:
         name: apache2
         state: restarted

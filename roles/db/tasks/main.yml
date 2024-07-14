@@ -1,10 +1,3 @@
-- name: Generate for database
-  ansible.builtin.set_fact:
-    login_user: root
-    login_pass: lookup('community general.random_string')
-    root_pass: lookup('community general.random_string')
-  when: lookup('ansible.builtin.env', 'CI') == 'true'
-
 - name: Install PostgreSQL server
   ansible.builtin.apt:
     name:
