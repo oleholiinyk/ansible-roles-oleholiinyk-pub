@@ -43,9 +43,9 @@
     dest: /etc/apache2/sites-available/app.conf
 
 - name: Enable application site ansible.builtin.
-  command:
+  ansible.builtin.command:
     cmd: a2ensite app
-    notify: restart apache2
+  notify: restart apache2
 
 - name: Download Composer installer
   get_url:
