@@ -19,37 +19,27 @@
     state: started
     enabled: true
 
-- name: Create database
-  community.postgresql.postgresql_db:
-    name: "{{ db_name }}"
-    state: present
-  become: true
-  become_user: postgres
-
 - name: Create database user
   community.postgresql.postgresql_user:
-
     db: "{{ db_name }}"
     name: "{{ db_user }}"
     password: "{{ db_pass }}"
     state: present
   become: true
   become_user: postgres
-  environment:
-    PGOPTIONS: "-c password_encryption=scram-sha-256"
 
-- name: Create the schemas
-  community.postgresql.postgresql_schema:
-    db: "{{ db_name }}"
-    name: "{{ db_user }}"
+- name: Create database
+  community.postgresql.postgresql_db:
+    name: "{{ db_name }}"
     owner: "{{ db_user }}"
+    state: present
   become: true
   become_user: postgres
 
 
-- name: Configure PostgreSQL to listen on the specified host
-  ansible.builtin.lineinfile:
-    path: /etc/postgresql/14/main/postgresql.conf
-    regexp: '^#?listen_addresses ='
-    line: "listen_addresses = '{{ db_host }}'"
-  notify: Restart PostgreSQL
+#- name: Configure PostgreSQL to listen on the specified host
+#  ansible.builtin.lineinfile:
+#    path: /etc/postgresql/14/main/postgresql.conf
+#    regexp: '^#?listen_addresses ='
+#    line: "listen_addresses = '{{ db_host }}'"
+#  notify: Restart PostgreSQL
