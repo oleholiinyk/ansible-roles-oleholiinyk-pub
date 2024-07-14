@@ -13,44 +13,27 @@
     state: present
     update_cache: true
 
-- name: Create the cluster
-  ansible.builtin.command:
-    cmd: pg_createcluster 12 main --start
-    args:
-      creates: /var/lib/postgresql/12/main/PG_VERSION
-
-- name: Start and enable the service
-  ansible.builtin.systemd:
-    name: postgresql
-    state: started
-    enabled: true
+- name: Create database
+  postgresql_db:
+    name: "{{ db_name }}"
+    state: present
+  become: yes
+  become_user: postgres
 
 - name: Create database user
-  community.postgresql.postgresql_user:
+  postgresql_user:
+    db: "{{ db_name }}"
     name: "{{ db_user }}"
     password: "{{ db_pass }}"
-    role_attr_flags: LOGIN
+    priv: ALL
     state: present
   become: yes
   become_user: postgres
 
-- name: Create database
-  community.postgresql.postgresql_db:
-    name: "{{ db_name }}"
-    owner: "{{ db_user }}"
-    state: present
-  become: yes
-  become_user: postgres
 
 - name: Configure PostgreSQL to listen on the specified host
   ansible.builtin.lineinfile:
     path: /etc/postgresql/12/main/postgresql.conf
     regexp: '^#?listen_addresses ='
     line: "listen_addresses = '{{ db_host }}'"
-  notify: Restart PostgreSQL
-
-- name: Allow access to the database from specified host
-  ansible.builtin.lineinfile:
-    path: /etc/postgresql/12/main/pg_hba.conf
-    line: "host    all             all             {{ db_host }}        md5"
   notify: Restart PostgreSQL
