@@ -33,7 +33,7 @@
     recurse: yes
 
 - name: Enable the Apache2 module mod_rewrite
-  community-general.apache2_module:
+  community.general.apache2_module:
     state: present
     name: rewrite
 
