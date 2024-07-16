@@ -79,7 +79,7 @@
     line: "{{ item.line }}"
   loop:
     - { regexp: '^DB_CONNECTION=', line: "DB_CONNECTION={{ db_connection }}" }
-    - { regexp: '^DATABASE_URL=', line: "DATABASE_URL=pgsql://{{ db_user }}:{{ db_pass }}@{{ db_host }}:5432/{{ db_name }}" }
+    - { regexp: '^DATABASE_URL=', line: "DATABASE_URL=pgsql://{{ db_user }}:{{ db_pass }}@{{ db_host }}:{{ db_port }}/{{ db_name }}" }
     - { regexp: '^DB_HOST=', line: "DB_HOST={{ db_host }}" }
     - { regexp: '^DB_PORT=', line: "DB_HOST={{ db_port }}" }
 
